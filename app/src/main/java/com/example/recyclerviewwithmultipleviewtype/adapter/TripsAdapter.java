@@ -1,6 +1,8 @@
 package com.example.recyclerviewwithmultipleviewtype.adapter;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -9,13 +11,69 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recyclerviewwithmultipleviewtype.R;
 import com.example.recyclerviewwithmultipleviewtype.models.Ads;
+import com.example.recyclerviewwithmultipleviewtype.models.Item;
 import com.example.recyclerviewwithmultipleviewtype.models.News;
 import com.example.recyclerviewwithmultipleviewtype.models.Trip;
 
-public class TripsAdapter {
+import java.util.List;
 
+public class TripsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-   static  class TripViewHolder extends RecyclerView.ViewHolder{
+    private List<Item> items;
+
+    public TripsAdapter(List<Item> items) {
+        this.items = items;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+       // Here types are 0-Trip,1-Ads,2-News
+        if(viewType==0){
+            return new TripViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_container_trip,parent,false)
+            );
+        }else if(viewType==1){
+            return new AdsViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_container_ads,parent,false)
+            );
+        }else{
+            return new NewsViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_container_news,parent,false)
+            );
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
+       if(getItemViewType(position)==0){
+           Trip trip= (Trip) items.get(position).getObject();
+           ((TripViewHolder)holder).setTripDate(trip);
+       }else if(getItemViewType(position)==1){
+           Ads ads= (Ads) items.get(position).getObject();
+           ((AdsViewHolder)holder).setAdsData(ads);
+       }else{
+           News news= (News) items.get(position).getObject();
+           ((NewsViewHolder)holder).setNewsData(news);
+
+       }
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return items.get(position).getType();
+    }
+
+    static  class TripViewHolder extends RecyclerView.ViewHolder{
 
        private ImageView imageTrip;
        private TextView textTripTitle,textTrip;
